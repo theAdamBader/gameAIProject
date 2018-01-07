@@ -30,7 +30,7 @@ namespace Complete
 			case 2:
 				return BetterBehaviour();
 			case 3:
-				return YouAreUnbelievable();
+				return UnpredictableBehaviour();
 
 			default:
 				return new Root (SuchFun());//this Root calls the default case, SuchFun
@@ -89,6 +89,7 @@ namespace Complete
 		//Third blackboard detects if the player is greater than 10, if so it moves towards it
 		//Fourth condition detects is the player is less or equal than 10
 		//Fifth condition detects the player's x axis and follows where it moves
+		//Last turns the opposite direction
 		private Root SimpleBehaviour()
 		{
 			return new Root(
@@ -135,10 +136,12 @@ namespace Complete
 		}
 
 		//BetterBehaviour is case 2
-		//first blackboard detects if there are anything, target or objects, in front of it and would reverse and turn slowly 
-		//second blackboard tracks if the target is near, if it is it moves faster than the third blackboard
-		//third blackboard tracks if the target is quite near however, it is random that this node would pass through and using low priority, it would stop once the condition is met 
-		//forth blackboard checks if the target is on the right then it would move to the left to try and avoid the target; else it moves right when target is on the left
+		//First blackboard decides if the enemy is behind and following the squences it will stop, wait then turn
+		//Second activates at random, 1%, which will reverse the AI and shoot while reversing 
+		//Third blackboard detects player and stops turning
+		//Forth condition detects the player's x axis and follows where it moves
+		//Fifth condition detects player if less than the 20 and follows it
+		//Last turns the opposite direction
 		private Root BetterBehaviour()
 		{
 			return new Root(
@@ -185,121 +188,20 @@ namespace Complete
 			);
 		}
 
-		//YouAreUnbelievable is case 3 (Unpredictable)
-		//first blackboard detects if the target is behind, if it is then stops moving and turn around until it detects the target
-		//second blackboard checks where the target and stops turning then after a second it goes onto the next node. It being set to low priority to immediate restart as it once meets the condition it would stop and then "order the  parent composite to restart the decorator immediately"(unitylist, 2017)
-		//third blackboard checks if the target is close, if so then moves less slower than the forth condition and randomly fires
-		//forth blackboard detects if the target is at a certain point and moves faster than the third condition however this node is active at random, probablity at 45%, and using BOTH function,which uses both low priority and self, it checks the condition to see if it is met or not
-		//fifth blackboard detects if their any object, including the target, in front in which it reverses to avoid collision but as it is set to a low priority immediate restart it would met the condition to move to the next node but let the parent restart the condition
-		//sixth blackboard checks if the target is on the right then move right else move left
-		private Root YouAreUnbelievable()
+		//UnpredictableBehaviour is case 3 
+	
+		private Root UnpredictableBehaviour()
 		{
 			return new Root(
 				new Selector(
 				new Service(0.5f, UpdatePerception,
 					new Selector(
 						
-						new BlackboardCondition("targetInFront",
-							Operator.IS_EQUAL, false,
-							Stops.IMMEDIATE_RESTART,//if false then when player is behind enemy then enemy turns around
-
-							new Sequence(StopMoving(),
-								new Wait(0.5f),
-								new Action(() => Turn(1.0f)),
-
-									new Sequence(new Action(() => Move(-0.5f)),
-								new Wait(0.5f),
-										new Action(() => Turn(1.0f))))),
-
-						new	Selector(
-						
-						new BlackboardCondition("targetOffCentre",
-							Operator.IS_SMALLER_OR_EQUAL, 0.1f,
-							Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
-							// Stop turning and waits a second before moving onto the next node
-							new Sequence(StopTurning(),
-										new Wait(1.0f))),//wait a second
-						
-						new BlackboardCondition("targetDistance",
-							Operator.IS_SMALLER_OR_EQUAL, 10.0f,//if player is 10 pixels near the enemy then enemy moves and randomly fires as soon as it moves
-							Stops.IMMEDIATE_RESTART,
-
-							new Sequence(new Action(() => Move(0.8f)),
-										RandomFire()))),
-						
-						new NPBehave.Random(0.45f,new BlackboardCondition("targetDistance",//45%
-							Operator.IS_SMALLER_OR_EQUAL, 40.0f,//if player is 40 pixels near the enemy then enemy moves
-							Stops.BOTH,
-
-							new Sequence(new Action(() => Move(1.5f)),
-								RandomFire()))),
-	
-						new NPBehave.Random(0.15f,new BlackboardCondition("targetInFront",
-							Operator.IS_EQUAL, true,
-							Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
-
-							new Sequence(new Action(() => Move(-0.1f)),
-								new Wait(0.5f),
-								new Action(() => Turn(-0.1f))))),
-
-						new BlackboardCondition("targetOnRight",
-							Operator.IS_EQUAL, true,
-							Stops.IMMEDIATE_RESTART,
 					
-							new Action(() => Turn(0.6f))),
-			
-						new Action(() => Turn(-0.6f))
-					)),
-
-					new Service(0.5f, UpdatePerception,
-						new Selector(
-
-							new BlackboardCondition("targetInFront",
-								Operator.IS_EQUAL, false,
-								Stops.IMMEDIATE_RESTART,//if false then when player is behind enemy then enemy turns around
-
-								new Sequence(StopMoving(),
-									new Wait(0.5f),
-									new Action(() => Turn(1.0f)))),
-
-							new BlackboardCondition("targetOffCentre",
-								Operator.IS_SMALLER_OR_EQUAL, 0.1f,
-								Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
-								// Stop turning and waits a second before moving onto the next node
-								new Sequence(StopTurning(),
-									new Wait(1.0f))),//wait a second
-
-							new BlackboardCondition("targetDistance",
-								Operator.IS_SMALLER_OR_EQUAL, 10.0f,//if player is 10 pixels near the enemy then enemy moves and randomly fires as soon as it moves
-								Stops.IMMEDIATE_RESTART,
-
-								new Sequence(new Action(() => Move(0.8f)),
-									RandomFire())),
-
-							new NPBehave.Random(0.45f,new BlackboardCondition("targetDistance",//45%
-								Operator.IS_SMALLER_OR_EQUAL, 40.0f,//if player is 40 pixels near the enemy then enemy moves
-								Stops.BOTH,
-
-								new Sequence(new Action(() => Move(1.5f)),
-									RandomFire()))),
-
-							new NPBehave.Random(0.15f,new BlackboardCondition("targetInFront",
-								Operator.IS_EQUAL, true,
-								Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
-
-								new Sequence(new Action(() => Move(-0.1f)),
-									new Wait(0.5f),
-									new Action(() => Turn(-0.1f))))),
-
-							new BlackboardCondition("targetOnRight",
-								Operator.IS_EQUAL, true,
-								Stops.IMMEDIATE_RESTART,
-
-								new Action(() => Turn(0.6f))),
-
-							new Action(() => Turn(-0.6f))
-						)
-					))
+						
+						)		
+					)
+				)
 			);
 		}
 
