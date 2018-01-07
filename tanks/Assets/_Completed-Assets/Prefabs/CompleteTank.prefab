@@ -1046,6 +1046,7 @@ MonoBehaviour:
   m_MinLaunchForce: 15
   m_MaxLaunchForce: 30
   m_MaxChargeTime: 0.75
+  fireRate: 0.8
   m_NPC: 0
 --- !u!198 &19809832
 ParticleSystem:
