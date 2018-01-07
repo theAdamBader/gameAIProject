@@ -30,7 +30,7 @@ namespace Complete
 			case 2:
 				return BetterBehaviour();
 			case 3:
-				return UnpredictableBehaviour();
+				return PrefectBehaviour();
 
 			default:
 				return new Root (SuchFun());//this Root calls the default case, SuchFun
@@ -115,21 +115,19 @@ namespace Complete
 							new Action(() => Move(0.6f))),
 
 
-						new BlackboardCondition("targetDistance",
-							Operator.IS_SMALLER_OR_EQUAL, 10.0f,
-							Stops.IMMEDIATE_RESTART,
-							new Sequence( StopMoving(),
-								new Wait (0.1f),
-								RandomFire())),
-
+							new BlackboardCondition("targetDistance",
+								Operator.IS_SMALLER_OR_EQUAL, 10.0f,
+								Stops.IMMEDIATE_RESTART,
+								new Sequence( StopMoving(),
+									new Wait (0.1f),
+									RandomFire())),
 
 							new BlackboardCondition("targetOnRight",
 								Operator.IS_EQUAL, true,
 								Stops.IMMEDIATE_RESTART,
 								new Action(() => Turn(0.6f))),
 
-							new Action(() => Turn(-0.6f))
-						
+							new Action(() => Turn(-0.6f))						
 					)
 				)
 			);
@@ -188,19 +186,57 @@ namespace Complete
 			);
 		}
 
-		//UnpredictableBehaviour is case 3 
+		//PrefectBehaviour is case 3 
 	
-		private Root UnpredictableBehaviour()
+		private Root PrefectBehaviour()
 		{
 			return new Root(
-				new Selector(
 				new Service(0.5f, UpdatePerception,
 					new Selector(
+
+						new BlackboardCondition("targetDistance",
+							Operator.IS_SMALLER_OR_EQUAL, 10.0f,
+							Stops.IMMEDIATE_RESTART,
+							new Sequence(StopMoving(),
+								new Wait(0.2f),
+								new Selector(
+									new BlackboardCondition("targetInFront",
+										Operator.IS_EQUAL, false,
+										Stops.IMMEDIATE_RESTART,
+										new Sequence(StopMoving(),
+											new Wait(0.2f),
+											new Action(() => Turn(0.8f)))),
+								
+									new BlackboardCondition("targetInFront",
+										Operator.IS_EQUAL, true,
+										Stops.LOWER_PRIORITY,
+											new Sequence(new Action(() => Move(-0.5f)),
+												new Wait(0.5f),
+												new Cooldown(2.0f, RandomFire())))))),
+
+						new NPBehave.Random(0.05f, new BlackboardCondition("targetInFront",
+							Operator.IS_EQUAL, true,
+							Stops.IMMEDIATE_RESTART,
+							new Action(() => Move(-0.2f)))),
 						
+						new BlackboardCondition("targetOnRight",
+							Operator.IS_EQUAL, true,
+							Stops.IMMEDIATE_RESTART,
+							new Action(() => Turn(1.0f))),
+
+						new BlackboardCondition("targetOffCentre",
+							Operator.IS_SMALLER_OR_EQUAL, 0.1f,
+							Stops.IMMEDIATE_RESTART,
+							new Sequence(StopTurning(),
+								new Wait (0.5f),
+								new Action(() => Move(0.8f)),
+								new BlackboardCondition("targetDistance",
+									Operator.IS_SMALLER_OR_EQUAL, 15.0f,
+									Stops.LOWER_PRIORITY,
+									RandomFire()))),
 					
-						
-						)		
-					)
+						new Action(() => Turn(-1.0f))					
+					)		
 				)
 			);
 		}
