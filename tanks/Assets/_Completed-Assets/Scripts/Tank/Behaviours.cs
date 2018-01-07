@@ -28,7 +28,7 @@ namespace Complete
 			case 1:
 				return SimpleBehaviour(); 
 			case 2:
-				return ScaredyCat();
+				return BetterBehaviour();
 			case 3:
 				return YouAreUnbelievable();
 
@@ -57,7 +57,7 @@ namespace Complete
 		//second blackboard checks if the target is at 10, if so then it tracks you but moves really slow, giving the target time to dash away from the enemy
 		//third blackboard checks the x axis of the plane to track where the tank is heading to, if right then turns; else it turns left
 		private Node SuchFun(){
-			return new Service(0.2f, UpdatePerception,
+			return new Service(0.15f, UpdatePerception,
 				new Selector(
 					new BlackboardCondition("targetOffCentre",
 						Operator.IS_SMALLER_OR_EQUAL, 0.1f,
@@ -82,10 +82,13 @@ namespace Complete
 			);
 		}
 
-		//FightMe is case 1 
+		//SimpleBehaviour is case 1 
 		//Selector randomly selects one of the blackboard conditions
 		//First blackboard decides if the enemy is behind and following the squences it will stop, wait then turn
 		//Second blackboard detects if the player is in front then it stops
+		//Third blackboard detects if the player is greater than 10, if so it moves towards it
+		//Fourth condition detects is the player is less or equal than 10
+		//Fifth condition detects the player's x axis and follows where it moves
 		private Root SimpleBehaviour()
 		{
 			return new Root(
@@ -94,7 +97,7 @@ namespace Complete
 						
 						new BlackboardCondition("targetInFront",
 							Operator.IS_EQUAL, false,
-							Stops.IMMEDIATE_RESTART,//if false then when player is behind enemy then enemy turns around
+							Stops.IMMEDIATE_RESTART,
 
 							new Sequence(StopMoving(),
 								new Wait(0.5f),
@@ -104,13 +107,11 @@ namespace Complete
 								Operator.IS_SMALLER_OR_EQUAL, 0.1f,
 								Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
 							StopTurning()),
-									
-			
 						
 							new BlackboardCondition("targetDistance",
-								Operator.IS_GREATER, 10.0f,//if target is 10 pixels near the enemy then enemy moves
+								Operator.IS_GREATER, 10.0f,
 								Stops.LOWER_PRIORITY,
-							new Action(() => Move(0.6f))),//moves forward towards the enemy
+							new Action(() => Move(0.6f))),
 
 
 						new BlackboardCondition("targetDistance",
@@ -122,7 +123,7 @@ namespace Complete
 
 
 							new BlackboardCondition("targetOnRight",
-								Operator.IS_EQUAL, true,//if the targetOnRight is true then turns left away from the target
+								Operator.IS_EQUAL, true,
 								Stops.IMMEDIATE_RESTART,
 								new Action(() => Turn(0.6f))),
 
@@ -133,43 +134,52 @@ namespace Complete
 			);
 		}
 
-		//ScaredyCat is case 2 (Frightened)
+		//BetterBehaviour is case 2
 		//first blackboard detects if there are anything, target or objects, in front of it and would reverse and turn slowly 
 		//second blackboard tracks if the target is near, if it is it moves faster than the third blackboard
 		//third blackboard tracks if the target is quite near however, it is random that this node would pass through and using low priority, it would stop once the condition is met 
 		//forth blackboard checks if the target is on the right then it would move to the left to try and avoid the target; else it moves right when target is on the left
-		private Root ScaredyCat()
+		private Root BetterBehaviour()
 		{
 			return new Root(
 				new Service(0.2f, UpdatePerception,
 					new Selector(
 
 						new BlackboardCondition("targetInFront",
+							Operator.IS_EQUAL, false,
+							Stops.BOTH,
+					
+							new Sequence(StopMoving(),
+								new Wait(0.2f),
+								new Action(() => Turn(0.5f)))),
+
+						new NPBehave.Random(0.01f,new BlackboardCondition("targetInFront",
+							Operator.IS_EQUAL, true,
+							Stops.SELF,
+
+							new Sequence(new Action(() => Move(-0.1f)),
+								new Wait(0.5f),
+								new Action(() => Turn(-0.1f)),
+								RandomFire()))),
+
+						new BlackboardCondition("targetOffCentre",
+							Operator.IS_SMALLER_OR_EQUAL, 0.1f,
+							Stops.LOWER_PRIORITY_IMMEDIATE_RESTART,
+							StopTurning()),
+
+						new BlackboardCondition("targetOnRight",
 							Operator.IS_EQUAL, true,
 							Stops.IMMEDIATE_RESTART,
-					
-							new Sequence(new Action(() => Move(-0.4f)),
-								new Wait(1.2f),
-								new Action(() => Turn(0.2f)))),
+							new Action(() => Turn(1.0f))),
 						
 						new BlackboardCondition("targetDistance",
-							Operator.IS_SMALLER_OR_EQUAL, 10.0f,
-							Stops.IMMEDIATE_RESTART,
-
-							new Action(() => Move(1.5f))),
-
-						new NPBehave.Random(0.15f,new BlackboardCondition("targetDistance",//15%
-							Operator.IS_SMALLER_OR_EQUAL, 20.0f,//if player is 20 pixels near the enemy then enemy moves
+							Operator.IS_SMALLER_OR_EQUAL, 20.0f,
 							Stops.LOWER_PRIORITY,
-
-							new Action(() => Move(1.0f)))),
-								
-						new BlackboardCondition("targetOnRight",
-							Operator.IS_EQUAL, true,//if the targetOnRight is true then turns left away from the target
-							Stops.IMMEDIATE_RESTART,
-							new Action(() => Turn(-0.2f))),
-
-						new Action(() => Turn(0.2f))//else it will turn right away from the target
+							new Sequence(new Action(() => Move(0.6f)),
+								new Wait(1.0f),
+								RandomFire())),
+				
+						new Action(() => Turn(-1.0f))
 					)
 				)
 			);
@@ -302,17 +312,5 @@ namespace Complete
 			blackboard["targetOnRight"] = heading.x > 0;
 			blackboard["targetOffCentre"] = Mathf.Abs(heading.x);
 		}
-
-//		private void UpdatePerception1() {
-//			Vector3 targetPos = TargetTransform1().position;
-//			Vector3 localPos = this.transform.InverseTransformPoint(targetPos);
-//			Vector3 heading = localPos.normalized;
-//			blackboard["targetDistance"] = localPos.magnitude;
-//			blackboard["targetInFront"] = heading.z > 0;
-//			blackboard["targetOnRight"] = heading.x > 0;
-//			blackboard["targetOffCentre"] = Mathf.Abs(heading.x);
-//		}
-	
-
 	}
 }

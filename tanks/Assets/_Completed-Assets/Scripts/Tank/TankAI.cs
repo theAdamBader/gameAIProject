@@ -55,17 +55,6 @@ namespace Complete
             }
         }
 
-		// Get the transform for the first target
-		private Transform TargetTransform1() {
-			if (m_Targets.Count > 0) {
-				return m_Targets[1].transform;
-			} else {
-				return null;
-			}
-		}
-
-
-
         // ACTION: move the tank with a velocity between -1 and 1.
         // -1: fast reverse
         // 0: no change
