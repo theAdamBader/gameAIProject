@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/*
+REFERENCE
+	Delay shots: https://answers.unity.com/questions/463192/shooting-multiple-bullets.html
+*/
+
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Complete

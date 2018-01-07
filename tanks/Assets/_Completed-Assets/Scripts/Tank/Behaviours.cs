@@ -51,11 +51,11 @@ namespace Complete
 		}
 
 		//SuchFun is case 0 (Fun)
-		//this is a private node that contains the selectors for the default case
-		//it has an interval of 0.2 and calls UpdatePerception 
-		//first blackboard uses the of centre which once it tracks the target it stops turns and randomly fires
-		//second blackboard checks if the target is at 10, if so then it tracks you but moves really slow, giving the target time to dash away from the enemy
-		//third blackboard checks the x axis of the plane to track where the tank is heading to, if right then turns; else it turns left
+		//This is a private node that contains the selectors for the default case
+		//It has an interval of 0.2 and calls UpdatePerception 
+		//First blackboard uses the of centre which once it tracks the target it stops turns and randomly fires
+		//Second blackboard checks if the target is at 10, if so then it tracks you but moves really slow, giving the target time to dash away from the enemy
+		//Third blackboard checks the x axis of the plane to track where the tank is heading to, if right then turns; else it turns left
 		private Node SuchFun(){
 			return new Service(0.15f, UpdatePerception,
 				new Selector(
@@ -187,7 +187,12 @@ namespace Complete
 		}
 
 		//PrefectBehaviour is case 3 
-	
+		//First blackboard checks for distance and when the player is detected then a selector chooses either...
+		//TargetInFront (false) which stops movement and turns or (true) whichs moves back and shoots
+		//At random (5%) the AI will move back whenever the player is at the front
+		//Fifth condition detects the player's x axis and follows where it moves
+		//Sixth condition detects the player then stops and moves towards it and when it is 15mm near the player then it fires
+		//Last turns the opposite direction
 		private Root PrefectBehaviour()
 		{
 			return new Root(
