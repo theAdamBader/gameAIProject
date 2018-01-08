@@ -62,22 +62,21 @@ namespace Complete
 					new BlackboardCondition("targetOffCentre",
 						Operator.IS_SMALLER_OR_EQUAL, 0.1f,
 						Stops.IMMEDIATE_RESTART,
-						new Sequence(StopTurning(),//this child node allows to stop the turn and fire random from 1 to -1
+						new Sequence(StopTurning(),
 							new Wait(0.5f),
-							RandomFire())),//this function is called from the Node Random Fire
+							RandomFire())),
 					
 					new BlackboardCondition("targetDistance",
-						Operator.IS_SMALLER_OR_EQUAL, 10.0f,//if target is 10 pixels near the enemy then enemy moves
+						Operator.IS_SMALLER_OR_EQUAL, 10.0f,
 						Stops.IMMEDIATE_RESTART,
-
-						new Action(() => Move(0.2f))),//moves forward towards the enemy
+						new Action(() => Move(0.2f))),
 					
 					new BlackboardCondition("targetOnRight",
-						Operator.IS_EQUAL, true,//if the targetOnRight is true then turn right towards the target
+						Operator.IS_EQUAL, true,
 						Stops.IMMEDIATE_RESTART,
 						new Action(() => Turn(0.2f))),
 					
-					new Action(() => Turn(-0.2f))//else it will turn left towards the target
+					new Action(() => Turn(-0.2f))
 				)
 			);
 		}
