@@ -20,13 +20,11 @@ The first behaviour, as demonstrated below, is a basic behaviour (taken from Jer
 
 The second behaviour tree, using the same service acts different than the previous behaviour, it checks if the front is false then it would stop moving and wait, half a second, then turns around, what this condition does is when the player moves behind the enemy, the AI would detect it and turn around and when it detects the player it would stop, as seen in the target off centre, however it uses a LOWER_PRIPORITY_IMMEDIATE_RESTART which means it would not restart as immediately as the first condition and the third has a LOWER_PRIPORITY which indicates that the selector would not choose it as much. The forth condition follows the player when it is close to the enemy and starts randomly firing and lastly the targetOnRight, does not change much and it looks at which x axis the player is heading to.
 
-![image alt text](image_2.png)
-
- 
+![behaviour1](https://drive.google.com/open?id=1pNAWpGoknkInjPjQMksYHZsam0J-3PXH "flowchart1")
 
 The third behaviour uses something different, a random NPBehave which adds a probability and the condition so there is a 1% chance that the selector will go for this condition which is when the targetInFront is true, the enemy will slowly move back while turning left and shooting the player. It stops itself when the *"condition is no longer met"* (meniku, 2017)*.* Other change was switching the targetDistance and the targetOnRight as it seems to have a slight better movement when following the player around.
 
- 
+
 
 The final behaviour, which behaves different than all as the condition detects the player at a near distances it will stop moving, wait for 0.2 seconds and randomly chooses to stop moving and turn when the player is behind or retreats backwards whilst shooting the player (the shooting function for this condition has a 2 seconds cooldown before shooting the next bullet), it also has a 5% chance moving backwards, away from the player; also when it detects the off centre it will move towards the player and when it is close enough to it, it will start shooting until the player is dead.
 
