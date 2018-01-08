@@ -16,7 +16,7 @@ How it works is that it calls the service and then using the selector, which ran
 
 The first behaviour, as demonstrated below, is a basic behaviour (taken from Jeremy’s modified code). What the first blackboard condition does is, it checks the target off centre if less than 0.1 and depending on its sequence it will follow each sequence and if successful then it would immediately restart the decorate. They second will check for distance and would slowly move towards the player, if it fails, it checks the last condition which checks which direction the player is moving, if moving right then it moves right otherwise it will check the last decorate and move left.
 
-![alt behaviour1](https://drive.google.com/file/d/1c0O7grHukhOkLVZGfgg2rw6QgBp23nUK/view?usp=sharing)
+![alt behaviour1](https://drive.google.com/file/d/1c0O7grHukhOkLVZGfgg2rw6QgBp23nUK/view?usp=sharing "logo1")
 
 The second behaviour tree, using the same service acts different than the previous behaviour, it checks if the front is false then it would stop moving and wait, half a second, then turns around, what this condition does is when the player moves behind the enemy, the AI would detect it and turn around and when it detects the player it would stop, as seen in the target off centre, however it uses a LOWER_PRIPORITY_IMMEDIATE_RESTART which means it would not restart as immediately as the first condition and the third has a LOWER_PRIPORITY which indicates that the selector would not choose it as much. The forth condition follows the player when it is close to the enemy and starts randomly firing and lastly the targetOnRight, does not change much and it looks at which x axis the player is heading to.
 
